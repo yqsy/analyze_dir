@@ -18,7 +18,7 @@
 * remove white line
 
 ## TODO
-
+* utf-8中文字节判定为二进制字节,istextfile函数判定为binary
 
 ## 关键细节
 

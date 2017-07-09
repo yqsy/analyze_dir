@@ -2,7 +2,7 @@ from optparse import OptionParser
 import os
 import mimetypes
 
-from binary_or_text.binary_or_test import istextfile
+from binary_or_text.binary_or_text import istextfile
 
 parser = OptionParser()
 
