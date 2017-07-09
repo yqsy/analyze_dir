@@ -14,3 +14,5 @@
 * new line convert
 * encoding convert
 * tab space convert
+* add new line to text file
+* remove white line
