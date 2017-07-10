@@ -1,6 +1,7 @@
 from optparse import OptionParser
 import os
 import mimetypes
+import chardet
 
 from binary_or_text.binary_or_text import istextfile
 
@@ -24,7 +25,7 @@ def need_judge_text(file, mime):
     head, tail = os.path.split(file)
     _, extension = os.path.splitext(tail)
 
-    include_extensions = ['.py', '.html', '.js', '.css', '.conf', '.txt', '.sh']
+    include_extensions = ['.py', '.html', '.js', '.css', '.conf', '.txt', '.sh', '.pas', ]
     include_mime = ['text/plain']
 
     if extension in include_extensions:
@@ -43,9 +44,10 @@ class FileAttr():
         self.file_numbers = len(files)
         self.mimes = {}
         self.newlines = {}
+        self.encodings = {}
 
     def __str__(self):
-        return '{} {} {} {}'.format(self.suffix, self.file_numbers, self.mimes, self.newlines)
+        return '{} {} {} newline: {} encoding: {}'.format(self.suffix, self.file_numbers, self.mimes, self.newlines, self.encodings)
 
     def __lt__(self, other):
         return self.file_numbers < other.file_numbers
@@ -108,11 +110,24 @@ if __name__ == '__main__':
             else:
                 file_attr.mimes[mime[0]] = file_attr.mimes.get(mime[0], 0) + 1
 
+            need_judge = need_judge_text(file, mime[0] if mime[0] else '')
+
+            # encoding
+            encoding = None
+
+            if need_judge:
+                with open(file, 'rb') as f:
+                    encoding = chardet.detect(f.read())['encoding']
+                    file_attr.encodings[encoding] = file_attr.encodings.get(encoding, 0) + 1
+            else:
+                file_attr.encodings['?'] = file_attr.encodings.get('?', 0) + 1
+
             # newline
-            if need_judge_text(file, mime[0] if mime[0] else ''):
-                with open(file,encoding = 'utf8') as f:
+            if need_judge:
+                with open(file, encoding=encoding) as f:
                     new_line = f.readline()[-1:]
                     file_attr.newlines[new_line] = file_attr.newlines.get(new_line, 0) + 1
             else:
                 file_attr.newlines['?'] = file_attr.newlines.get('?', 0) + 1
+
         print(file_attr)
