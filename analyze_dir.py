@@ -12,6 +12,10 @@ parser.add_option('-d', '--dir', dest='directory', default='.',
 parser.add_option('-s', '--suffix', dest='suffix', default=None,
                   help="""which suffix to be traversed. type in '.html;.css'""")
 
+# TODO make it like .gitignore
+# only directory ok
+# all directory and files
+# Relative directory and files
 parser.add_option('-i', '--ignore_directory', dest='ignore_directory', default=None,
                   help="""""""ignore director. type in 'dir1;dir1/dir2'""")
 
