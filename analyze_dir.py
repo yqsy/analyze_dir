@@ -31,7 +31,7 @@ if __name__ == '__main__':
     extension_dict = {}
 
     if options.suffix:
-        filter_suffixs = options.suffix.split(',')
+        filter_suffixs = options.suffix.split(';')
 
     for root, dirs, files in os.walk(options.directory):
         for file in files:
