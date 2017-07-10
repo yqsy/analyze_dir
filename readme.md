@@ -16,11 +16,3 @@
 * tab space convert
 * add new line to text file
 * remove white line
-
-## TODO
-* utf-8中文字节判定为二进制字节,istextfile函数判定为binary
-
-## 关键细节
-
-### 判断text还是binary
-读取文件前500个字节,二进制字节 < 30%则为文本
