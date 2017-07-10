@@ -20,15 +20,32 @@ parser.add_option('-i', '--ignore_directory', dest='ignore_directory', default=N
                   help="""""""ignore director. type in 'dir1;dir1/dir2'""")
 
 
+def need_judge_text(file, mime):
+    head, tail = os.path.split(file)
+    _, extension = os.path.splitext(tail)
+
+    include_extensions = ['.py', '.html', '.js', '.css', '.conf', '.txt', '.sh']
+    include_mime = ['text/plain']
+
+    if extension in include_extensions:
+        return True
+
+    if mime in include_mime:
+        return True
+
+    return False
+
+
 class FileAttr():
     def __init__(self, suffix, files):
         self.suffix = suffix
         self.files = files
         self.file_numbers = len(files)
         self.mimes = {}
+        self.newlines = {}
 
     def __str__(self):
-        return '{} {} {}'.format(self.suffix, self.file_numbers, self.mimes)
+        return '{} {} {} {}'.format(self.suffix, self.file_numbers, self.mimes, self.newlines)
 
     def __lt__(self, other):
         return self.file_numbers < other.file_numbers
@@ -91,4 +108,11 @@ if __name__ == '__main__':
             else:
                 file_attr.mimes[mime[0]] = file_attr.mimes.get(mime[0], 0) + 1
 
+            # newline
+            if need_judge_text(file, mime[0] if mime[0] else ''):
+                with open(file,encoding = 'utf8') as f:
+                    new_line = f.readline()[-1:]
+                    file_attr.newlines[new_line] = file_attr.newlines.get(new_line, 0) + 1
+            else:
+                file_attr.newlines['?'] = file_attr.newlines.get('?', 0) + 1
         print(file_attr)
