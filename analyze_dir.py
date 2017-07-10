@@ -10,7 +10,11 @@ parser.add_option('-d', '--dir', dest='directory', default='.',
                   help='which directory to be traversed')
 
 parser.add_option('-s', '--suffix', dest='suffix', default=None,
-                  help='which suffix to be traversed. type in .html;.css')
+                  help="""which suffix to be traversed. type in '.html;.css'""")
+
+parser.add_option('-i', '--ignore_directory', dest='ignore_directory', default=None,
+                  help="""""""ignore director. type in 'dir1;dir1/dir2'""")
+
 
 class FileAttr():
     def __init__(self, suffix, files):
@@ -33,11 +37,32 @@ if __name__ == '__main__':
     if options.suffix:
         filter_suffixs = options.suffix.split(';')
 
+    if options.ignore_directory:
+        ignore_directorys = options.ignore_directory.split(';')
+
+        # exclude absolute directories
+        for idx, directory in enumerate(ignore_directorys):
+            ignore_directorys[idx] = os.path.abspath(os.path.join(options.directory, directory))
+
+
+    def judge_ignore_directorys(judge_dir):
+        for dir in ignore_directorys:
+            if judge_dir.startswith(dir):
+                return True
+        return False
+
+
     for root, dirs, files in os.walk(options.directory):
         for file in files:
             file = os.path.join(root, file)
             _, file_extension = os.path.splitext(file)
 
+            # exclude directory
+            if options.ignore_directory:
+                if judge_ignore_directorys(root):
+                    continue
+
+            # only include file
             if options.suffix:
                 if file_extension not in filter_suffixs:
                     continue
