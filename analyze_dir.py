@@ -25,9 +25,10 @@ class FileAttr():
         self.suffix = suffix
         self.files = files
         self.file_numbers = len(files)
+        self.mimes = {}
 
     def __str__(self):
-        return '{} {}'.format(self.suffix, self.file_numbers)
+        return '{} {} {}'.format(self.suffix, self.file_numbers, self.mimes)
 
     def __lt__(self, other):
         return self.file_numbers < other.file_numbers
@@ -82,13 +83,12 @@ if __name__ == '__main__':
     file_attrs.sort(reverse=True)
 
     for file_attr in file_attrs:
-        print(file_attr)
-
         for file in file_attr.files:
-            mine = mimetypes.guess_type(file)
+            mime = mimetypes.guess_type(file)
 
-            if not mine[0]:
-                print('[no mine]', file)
+            if not mime[0]:
+                file_attr.mimes['no_mime'] = file_attr.mimes.get('no_mime', 0) + 1
             else:
-                print('[', mine[0], ']', file)
+                file_attr.mimes[mime[0]] = file_attr.mimes.get(mime[0], 0) + 1
 
+        print(file_attr)
