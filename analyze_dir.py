@@ -16,13 +16,13 @@ class FileAttr():
     def __init__(self, suffix, files):
         self.suffix = suffix
         self.files = files
-        self.len = len(files)
+        self.file_numbers = len(files)
 
     def __str__(self):
-        return '{} {}'.format(self.suffix, self.len)
+        return '{} {}'.format(self.suffix, self.file_numbers)
 
     def __lt__(self, other):
-        return self.len < other.len
+        return self.file_numbers < other.file_numbers
 
 
 if __name__ == '__main__':
@@ -41,18 +41,20 @@ if __name__ == '__main__':
             if options.suffix:
                 if file_extension not in filter_suffixs:
                     continue
+
+            # like {.html: [A.html, B.html], .py: [A.py, B.py]}
             extension_dict.setdefault(file_extension, []).append(file)
 
     file_attrs = []
 
+    # put in list, and reverse sort by file's num
     for key, value in extension_dict.items():
         file_attrs.append(FileAttr(key, value))
-
     file_attrs.sort(reverse=True)
 
     for file_attr in file_attrs:
         print(file_attr)
 
         for file in file_attr.files:
-            with open(file, mode='rb') as f:
-                print(file, istextfile(f))
+            mine = mimetypes.guess_type(file)
+            print(file, mine)
