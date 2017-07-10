@@ -55,12 +55,17 @@ class FileAttr():
         self.encodings = {}
         self.size = 0
         self.lines = 0
+        self.tab_or_space = {}
 
     def __str__(self):
-        return '{} {} {} newline: {} encoding: {} size: {} lines: {}'.format(self.suffix, self.file_numbers, self.mimes,
-                                                                             self.newlines,
-                                                                             self.encodings, sizeof_fmt(self.size),
-                                                                             self.lines)
+        return '{} {} {} newline: {} encoding: {} size: {} lines: {} tab_or_space: {}'.format(self.suffix,
+                                                                                              self.file_numbers,
+                                                                                              self.mimes,
+                                                                                              self.newlines,
+                                                                                              self.encodings,
+                                                                                              sizeof_fmt(self.size),
+                                                                                              self.lines,
+                                                                                              self.tab_or_space)
 
     def __lt__(self, other):
         return self.file_numbers < other.file_numbers
@@ -147,11 +152,23 @@ if __name__ == '__main__':
             file_attr.size = file_attr.size + os.path.getsize(file)
 
             # line
+            # TODO solve exception
             if need_judge:
                 try:
                     file_attr.lines = file_attr.lines + sum(1 for line in open(file, encoding=encoding))
                 except(UnicodeDecodeError):
                     pass
 
+            # tab or space
+            # TODO solve exception
+            if need_judge:
+                try:
+                    with open(file) as f:
+                        if f.read(500).find('\t') != -1:
+                            file_attr.tab_or_space[r'\t'] =  file_attr.tab_or_space.get(r'\t', 0) + 1
+                        else:
+                            file_attr.tab_or_space[r'space'] = file_attr.tab_or_space.get(r'space', 0) + 1
+                except(UnicodeDecodeError):
+                    pass
 
         print(file_attr)
