@@ -86,4 +86,9 @@ if __name__ == '__main__':
 
         for file in file_attr.files:
             mine = mimetypes.guess_type(file)
-            print(file, mine)
+
+            if not mine[0]:
+                print('[no mine]', file)
+            else:
+                print('[', mine[0], ']', file)
+
