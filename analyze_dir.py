@@ -37,6 +37,14 @@ def need_judge_text(file, mime):
     return False
 
 
+def sizeof_fmt(num, suffix='B'):
+    for unit in ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi']:
+        if abs(num) < 1024.0:
+            return "%3.1f%s%s" % (num, unit, suffix)
+        num /= 1024.0
+    return "%.1f%s%s" % (num, 'Yi', suffix)
+
+
 class FileAttr():
     def __init__(self, suffix, files):
         self.suffix = suffix
@@ -45,9 +53,14 @@ class FileAttr():
         self.mimes = {}
         self.newlines = {}
         self.encodings = {}
+        self.size = 0
+        self.lines = 0
 
     def __str__(self):
-        return '{} {} {} newline: {} encoding: {}'.format(self.suffix, self.file_numbers, self.mimes, self.newlines, self.encodings)
+        return '{} {} {} newline: {} encoding: {} size: {} lines: {}'.format(self.suffix, self.file_numbers, self.mimes,
+                                                                             self.newlines,
+                                                                             self.encodings, sizeof_fmt(self.size),
+                                                                             self.lines)
 
     def __lt__(self, other):
         return self.file_numbers < other.file_numbers
@@ -129,5 +142,16 @@ if __name__ == '__main__':
                     file_attr.newlines[new_line] = file_attr.newlines.get(new_line, 0) + 1
             else:
                 file_attr.newlines['?'] = file_attr.newlines.get('?', 0) + 1
+
+            # size
+            file_attr.size = file_attr.size + os.path.getsize(file)
+
+            # line
+            if need_judge:
+                try:
+                    file_attr.lines = file_attr.lines + sum(1 for line in open(file, encoding=encoding))
+                except(UnicodeDecodeError):
+                    pass
+
 
         print(file_attr)
