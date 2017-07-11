@@ -24,17 +24,14 @@ parser.add_option('-v', '--verbose', dest='verbose', action="store_true",
                   help='verbose')
 
 
-def need_judge_text(file, mime):
+def need_judge_text(file):
     head, tail = os.path.split(file)
     _, extension = os.path.splitext(tail)
 
-    include_extensions = ['.py', '.html', '.js', '.css', '.conf', '.txt', '.sh', '.pas', '.sql', '.sqc']
-    include_mime = ['text/plain']
+    include_extensions = ['.py', '.html', '.js', '.css', '.conf', '.txt', '.sh', '.pas', '.sql', '.sqc',
+                          '.h', '.cpp', '.ini', '.H', '.txt', '.sql', '.CPP']
 
     if extension in include_extensions:
-        return True
-
-    if mime in include_mime:
         return True
 
     return False
@@ -59,16 +56,19 @@ class FileAttr():
         self.size = 0
         self.lines = 0
         self.tab_or_space = {}
+        self.need_judge = False
 
     def __str__(self):
-        return '{} {} {} newline: {} encoding: {} size: {} lines: {} tab_or_space: {}'.format(self.suffix,
-                                                                                              self.file_numbers,
-                                                                                              self.mimes,
-                                                                                              self.newlines,
-                                                                                              self.encodings,
-                                                                                              sizeof_fmt(self.size),
-                                                                                              self.lines,
-                                                                                              self.tab_or_space)
+        if self.need_judge:
+            return '{} {} newline: {} encoding: {} size: {} lines: {} tab_or_space: {}'.format(self.suffix,
+                                                                                               self.file_numbers,
+                                                                                               self.newlines,
+                                                                                               self.encodings,
+                                                                                               sizeof_fmt(self.size),
+                                                                                               self.lines,
+                                                                                               self.tab_or_space)
+        else:
+            return '{} {}'.format(self.suffix, self.file_numbers)
 
     def __lt__(self, other):
         return self.file_numbers < other.file_numbers
@@ -125,17 +125,13 @@ if __name__ == '__main__':
 
     for file_attr in file_attrs:
         for file in file_attr.files:
-            mime = mimetypes.guess_type(file)
 
-            if not mime[0]:
-                file_attr.mimes['no_mime'] = file_attr.mimes.get('no_mime', 0) + 1
-            else:
-                file_attr.mimes[mime[0]] = file_attr.mimes.get(mime[0], 0) + 1
-
-            need_judge = need_judge_text(file, mime[0] if mime[0] else '')
+            need_judge = need_judge_text(file)
 
             # encoding
             encoding = None
+
+            file_attr.need_judge = need_judge
 
             if need_judge:
                 with open(file, 'rb') as f:
@@ -147,20 +143,22 @@ if __name__ == '__main__':
             # newline
             if need_judge:
                 with open(file, 'rb') as f:
-                        line = f.readline()
+                    line = f.readline()
 
-                        def get_new_line(line):
-                            new_line_characters = [b'\r\n', b'\r', b'\n', b'']
-                            for c in new_line_characters:
-                                if line.endswith(c):
-                                    return c.decode()
-                            return None
 
-                        c = get_new_line(line)
-                        if c != None:
-                            file_attr.newlines[c] = file_attr.newlines.get(c, 0) + 1
-                        else:
-                            file_attr.newlines['?'] = file_attr.newlines.get('?', 0) + 1
+                    def get_new_line(line):
+                        new_line_characters = [b'\r\n', b'\r', b'\n', b'']
+                        for c in new_line_characters:
+                            if line.endswith(c):
+                                return c.decode()
+                        return None
+
+
+                    c = get_new_line(line)
+                    if c != None:
+                        file_attr.newlines[c] = file_attr.newlines.get(c, 0) + 1
+                    else:
+                        file_attr.newlines['?'] = file_attr.newlines.get('?', 0) + 1
 
             else:
                 file_attr.newlines['?'] = file_attr.newlines.get('?', 0) + 1
@@ -170,15 +168,15 @@ if __name__ == '__main__':
 
             # line
             if need_judge:
-                    file_attr.lines = file_attr.lines + sum(1 for line in open(file, 'rb'))
+                file_attr.lines = file_attr.lines + sum(1 for line in open(file, 'rb'))
 
             # tab or space
             if need_judge:
-                    with open(file, 'rb') as f:
-                        if f.read(500).find(b'\t') != -1:
-                            file_attr.tab_or_space['\t'] = file_attr.tab_or_space.get('\t', 0) + 1
-                        else:
-                            file_attr.tab_or_space[r'space'] = file_attr.tab_or_space.get(r'space', 0) + 1
+                with open(file, 'rb') as f:
+                    if f.read(500).find(b'\t') != -1:
+                        file_attr.tab_or_space['\t'] = file_attr.tab_or_space.get('\t', 0) + 1
+                    else:
+                        file_attr.tab_or_space[r'space'] = file_attr.tab_or_space.get(r'space', 0) + 1
 
             if options.verbose:
                 print('{} encoding:{}'.format(file, encoding))
