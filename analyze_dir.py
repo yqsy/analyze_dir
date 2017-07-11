@@ -169,24 +169,16 @@ if __name__ == '__main__':
             file_attr.size = file_attr.size + os.path.getsize(file)
 
             # line
-            # TODO solve exception
             if need_judge:
-                try:
-                    file_attr.lines = file_attr.lines + sum(1 for line in open(file, encoding=encoding))
-                except(UnicodeDecodeError):
-                    pass
+                    file_attr.lines = file_attr.lines + sum(1 for line in open(file, 'rb'))
 
             # tab or space
-            # TODO solve exception
             if need_judge:
-                try:
-                    with open(file) as f:
-                        if f.read(500).find('\t') != -1:
-                            file_attr.tab_or_space[r'\t'] = file_attr.tab_or_space.get(r'\t', 0) + 1
+                    with open(file, 'rb') as f:
+                        if f.read(500).find(b'\t') != -1:
+                            file_attr.tab_or_space['\t'] = file_attr.tab_or_space.get('\t', 0) + 1
                         else:
                             file_attr.tab_or_space[r'space'] = file_attr.tab_or_space.get(r'space', 0) + 1
-                except(UnicodeDecodeError):
-                    pass
 
             if options.verbose:
                 print('{} encoding:{}'.format(file, encoding))
