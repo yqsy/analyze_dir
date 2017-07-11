@@ -114,7 +114,7 @@ if __name__ == '__main__':
                     continue
 
             # like {.html: [A.html, B.html], .py: [A.py, B.py]}
-            extension_dict.setdefault(file_extension, []).append(file)
+            extension_dict.setdefault(file_extension, []).append(os.path.abspath(file))
 
     file_attrs = []
 
