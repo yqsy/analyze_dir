@@ -25,7 +25,7 @@ def need_judge_text(file, mime):
     head, tail = os.path.split(file)
     _, extension = os.path.splitext(tail)
 
-    include_extensions = ['.py', '.html', '.js', '.css', '.conf', '.txt', '.sh', '.pas', ]
+    include_extensions = ['.py', '.html', '.js', '.css', '.conf', '.txt', '.sh', '.pas', '.sql', '.sqc']
     include_mime = ['text/plain']
 
     if extension in include_extensions:
@@ -143,8 +143,11 @@ if __name__ == '__main__':
             # newline
             if need_judge:
                 with open(file, encoding=encoding) as f:
-                    new_line = f.readline()[-1:]
-                    file_attr.newlines[new_line] = file_attr.newlines.get(new_line, 0) + 1
+                    try:
+                        new_line = f.readline()[-1:]
+                        file_attr.newlines[new_line] = file_attr.newlines.get(new_line, 0) + 1
+                    except(UnicodeDecodeError):
+                        file_attr.newlines['?'] = file_attr.newlines.get('?', 0) + 1
             else:
                 file_attr.newlines['?'] = file_attr.newlines.get('?', 0) + 1
 
