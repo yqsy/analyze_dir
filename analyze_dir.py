@@ -18,7 +18,10 @@ parser.add_option('-s', '--suffix', dest='suffix', default=None,
 # all directory and files
 # Relative directory and files
 parser.add_option('-i', '--ignore_directory', dest='ignore_directory', default=None,
-                  help="""""""ignore director. type in 'dir1,dir1/dir2'""")
+                  help="""ignore director. type in 'dir1,dir1/dir2'""")
+
+parser.add_option('-v', '--verbose', dest='verbose', action="store_true",
+                  help='verbose')
 
 
 def need_judge_text(file, mime):
@@ -174,5 +177,9 @@ if __name__ == '__main__':
                             file_attr.tab_or_space[r'space'] = file_attr.tab_or_space.get(r'space', 0) + 1
                 except(UnicodeDecodeError):
                     pass
+
+            if options.verbose:
+                print('{} encoding:{}'.format(file, encoding))
+
 
         print(file_attr)
