@@ -11,14 +11,14 @@ parser.add_option('-d', '--dir', dest='directory', default='.',
                   help='which directory to be traversed')
 
 parser.add_option('-s', '--suffix', dest='suffix', default=None,
-                  help="""which suffix to be traversed. type in '.html;.css'""")
+                  help="""which suffix to be traversed. type in '.html,.css'""")
 
 # TODO make it like .gitignore
 # only directory ok
 # all directory and files
 # Relative directory and files
 parser.add_option('-i', '--ignore_directory', dest='ignore_directory', default=None,
-                  help="""""""ignore director. type in 'dir1;dir1/dir2'""")
+                  help="""""""ignore director. type in 'dir1,dir1/dir2'""")
 
 
 def need_judge_text(file, mime):
@@ -77,10 +77,10 @@ if __name__ == '__main__':
     extension_dict = {}
 
     if options.suffix:
-        filter_suffixs = options.suffix.split(';')
+        filter_suffixs = options.suffix.split(',')
 
     if options.ignore_directory:
-        ignore_directorys = options.ignore_directory.split(';')
+        ignore_directorys = options.ignore_directory.split(',')
 
         # exclude absolute directories
         for idx, directory in enumerate(ignore_directorys):
@@ -101,7 +101,8 @@ if __name__ == '__main__':
 
             # exclude directory
             if options.ignore_directory:
-                if judge_ignore_directorys(root):
+                abspath = os.path.abspath(root)
+                if judge_ignore_directorys(abspath):
                     continue
 
             # only include file
