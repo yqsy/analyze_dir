@@ -146,12 +146,22 @@ if __name__ == '__main__':
 
             # newline
             if need_judge:
-                with open(file, encoding=encoding) as f:
-                    try:
-                        new_line = f.readline()[-1:]
-                        file_attr.newlines[new_line] = file_attr.newlines.get(new_line, 0) + 1
-                    except(UnicodeDecodeError):
-                        file_attr.newlines['?'] = file_attr.newlines.get('?', 0) + 1
+                with open(file, 'rb') as f:
+                        line = f.readline()
+
+                        def get_new_line(line):
+                            new_line_characters = [b'\r\n', b'\r', b'\n', b'']
+                            for c in new_line_characters:
+                                if line.endswith(c):
+                                    return c.decode()
+                            return None
+
+                        c = get_new_line(line)
+                        if c != None:
+                            file_attr.newlines[c] = file_attr.newlines.get(c, 0) + 1
+                        else:
+                            file_attr.newlines['?'] = file_attr.newlines.get('?', 0) + 1
+
             else:
                 file_attr.newlines['?'] = file_attr.newlines.get('?', 0) + 1
 
@@ -172,7 +182,7 @@ if __name__ == '__main__':
                 try:
                     with open(file) as f:
                         if f.read(500).find('\t') != -1:
-                            file_attr.tab_or_space[r'\t'] =  file_attr.tab_or_space.get(r'\t', 0) + 1
+                            file_attr.tab_or_space[r'\t'] = file_attr.tab_or_space.get(r'\t', 0) + 1
                         else:
                             file_attr.tab_or_space[r'space'] = file_attr.tab_or_space.get(r'space', 0) + 1
                 except(UnicodeDecodeError):
@@ -180,6 +190,5 @@ if __name__ == '__main__':
 
             if options.verbose:
                 print('{} encoding:{}'.format(file, encoding))
-
 
         print(file_attr)
