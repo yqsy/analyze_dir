@@ -29,7 +29,7 @@ def need_judge_text(file):
     _, extension = os.path.splitext(tail)
 
     include_extensions = ['.py', '.html', '.js', '.css', '.conf', '.txt', '.sh', '.pas', '.sql', '.sqc',
-                          '.h', '.cpp', '.ini', '.H', '.txt', '.sql', '.CPP']
+                          '.h', '.cpp', '.ini', '.H', '.txt', '.sql', '.CPP', '.rb']
 
     if extension in include_extensions:
         return True
