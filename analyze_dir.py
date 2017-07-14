@@ -64,7 +64,8 @@ class FileAttr():
                                                                                                self.file_numbers,
                                                                                                self.newlines,
                                                                                                self.encodings,
-                                                                                               sizeof_fmt(self.size),
+                                                                                               sizeof_fmt(
+                                                                                                   self.size),
                                                                                                self.lines,
                                                                                                self.tab_or_space)
         else:
@@ -87,15 +88,14 @@ if __name__ == '__main__':
 
         # exclude absolute directories
         for idx, directory in enumerate(ignore_directorys):
-            ignore_directorys[idx] = os.path.abspath(os.path.join(options.directory, directory))
-
+            ignore_directorys[idx] = os.path.abspath(
+                os.path.join(options.directory, directory))
 
     def judge_ignore_directorys(judge_dir):
         for dir in ignore_directorys:
             if judge_dir.startswith(dir):
                 return True
         return False
-
 
     for root, dirs, files in os.walk(options.directory):
         for file in files:
@@ -114,7 +114,8 @@ if __name__ == '__main__':
                     continue
 
             # like {.html: [A.html, B.html], .py: [A.py, B.py]}
-            extension_dict.setdefault(file_extension, []).append(os.path.abspath(file))
+            extension_dict.setdefault(
+                file_extension, []).append(os.path.abspath(file))
 
     file_attrs = []
 
@@ -136,7 +137,8 @@ if __name__ == '__main__':
             if need_judge:
                 with open(file, 'rb') as f:
                     encoding = chardet.detect(f.read())['encoding']
-                    file_attr.encodings[encoding] = file_attr.encodings.get(encoding, 0) + 1
+                    file_attr.encodings[encoding] = file_attr.encodings.get(
+                        encoding, 0) + 1
             else:
                 file_attr.encodings['?'] = file_attr.encodings.get('?', 0) + 1
 
@@ -145,7 +147,6 @@ if __name__ == '__main__':
                 with open(file, 'rb') as f:
                     line = f.readline()
 
-
                     def get_new_line(line):
                         new_line_characters = [b'\r\n', b'\r', b'\n', b'']
                         for c in new_line_characters:
@@ -153,12 +154,13 @@ if __name__ == '__main__':
                                 return c.decode()
                         return None
 
-
                     c = get_new_line(line)
                     if c != None:
-                        file_attr.newlines[c] = file_attr.newlines.get(c, 0) + 1
+                        file_attr.newlines[c] = file_attr.newlines.get(
+                            c, 0) + 1
                     else:
-                        file_attr.newlines['?'] = file_attr.newlines.get('?', 0) + 1
+                        file_attr.newlines['?'] = file_attr.newlines.get(
+                            '?', 0) + 1
 
             else:
                 file_attr.newlines['?'] = file_attr.newlines.get('?', 0) + 1
@@ -168,15 +170,18 @@ if __name__ == '__main__':
 
             # line
             if need_judge:
-                file_attr.lines = file_attr.lines + sum(1 for line in open(file, 'rb'))
+                file_attr.lines = file_attr.lines + \
+                    sum(1 for line in open(file, 'rb'))
 
             # tab or space
             if need_judge:
                 with open(file, 'rb') as f:
                     if f.read(500).find(b'\t') != -1:
-                        file_attr.tab_or_space['\t'] = file_attr.tab_or_space.get('\t', 0) + 1
+                        file_attr.tab_or_space['\t'] = file_attr.tab_or_space.get(
+                            '\t', 0) + 1
                     else:
-                        file_attr.tab_or_space[r'space'] = file_attr.tab_or_space.get(r'space', 0) + 1
+                        file_attr.tab_or_space[r'space'] = file_attr.tab_or_space.get(
+                            r'space', 0) + 1
 
             if options.verbose:
                 print('{} encoding:{}'.format(file, encoding))
