@@ -1,3 +1,4 @@
+"""analyze directory"""
 from optparse import OptionParser
 import os
 import mimetypes
@@ -28,8 +29,10 @@ def need_judge_text(file):
     head, tail = os.path.split(file)
     _, extension = os.path.splitext(tail)
 
-    include_extensions = ['.py', '.html', '.js', '.css', '.conf', '.txt', '.sh', '.pas', '.sql', '.sqc',
-                          '.h', '.cpp', '.ini', '.H', '.txt', '.sql', '.CPP', '.rb']
+    include_extensions = ['.py', '.html', '.js', '.css', '.conf',
+                          '.txt', '.sh', '.pas', '.sql', '.sqc',
+                          '.h', '.cpp', '.ini', '.H', '.txt',
+                          '.sql', '.CPP', '.rb']
 
     if extension in include_extensions:
         return True
@@ -60,14 +63,14 @@ class FileAttr():
 
     def __str__(self):
         if self.need_judge:
-            return '{} {} newline: {} encoding: {} size: {} lines: {} tab_or_space: {}'.format(self.suffix,
-                                                                                               self.file_numbers,
-                                                                                               self.newlines,
-                                                                                               self.encodings,
-                                                                                               sizeof_fmt(
-                                                                                                   self.size),
-                                                                                               self.lines,
-                                                                                               self.tab_or_space)
+            return '{} {} newline: {} encoding: {} size: \
+{} lines: {} tab_or_space: {}'.format(self.suffix,
+                                      self.file_numbers,
+                                      self.newlines,
+                                      self.encodings,
+                                      sizeof_fmt(self.size),
+                                      self.lines,
+                                      self.tab_or_space)
         else:
             return '{} {}'.format(self.suffix, self.file_numbers)
 
