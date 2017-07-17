@@ -78,9 +78,9 @@ class FileAttr():
     @staticmethod
     def get_new_line(line):
         """获取换行符,line为bytes类型
-        
+
         -> string 换行符
-        
+
         """
         new_line_characters = [b'\r\n', b'\r', b'\n', b'']
         for c in new_line_characters:
@@ -128,7 +128,8 @@ class FileAttr():
             if file_handle.read(1000).find(b'\t') != -1:
                 self.tab_or_space['\t'] = self.tab_or_space.get('\t', 0) + 1
             else:
-                self.tab_or_space['space'] = self.tab_or_space.get('space', 0) + 1
+                self.tab_or_space['space'] = self.tab_or_space.get(
+                    'space', 0) + 1
 
 
 def get_filter_suffixs():
@@ -161,9 +162,9 @@ def judge_ignore_directorys(ignore_directorys, judge_dir):
 
 def get_extension_dict(ignore_directorys, filter_suffixs):
     """遍历目录获得所有全量文件名
-    
+
     -> {后缀 : 全量文件名列表}
-    
+
     过滤方式:
     1.黑名单文件夹 2.白名单文件后缀
     """
@@ -193,9 +194,9 @@ def get_extension_dict(ignore_directorys, filter_suffixs):
 
 def get_file_attrs(extension_dict):
     """把 {后缀 : 全量文件名列表} 放到FileAttr list里,以文件数量进行排序
-    
+
     -> [FileAttr]
-    
+
     """
     file_attrs = []
     for key, value in extension_dict.items():
