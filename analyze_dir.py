@@ -8,13 +8,31 @@ PARSER = argparse.ArgumentParser()
 SUBPARSER = PARSER.add_subparsers(help='commands', dest='command')
 
 ANALYZE_PARSER = SUBPARSER.add_parser('analyze', help='analyze directory')
+
 ANALYZE_PARSER.add_argument('directory', metavar='directory',
                             nargs=1, help='which directory to be traversed')
+
 ANALYZE_PARSER.add_argument('-s', '--suffix', action='store', dest='suffix',
                             default=None, help=
                             """which suffix to be traversed. type in '.html,.css'""")
+
 ANALYZE_PARSER.add_argument('-i', '--ignore_directory', action='store', dest='ignore_directory',
                             default=None, help="""ignore director. type in 'dir1,dir1/dir2'""")
+
+CONVERT_PARSER = SUBPARSER.add_parser('convert', help='convert file in directory')
+
+CONVERT_PARSER.add_argument('directory', metavar='directory',
+                            nargs=1, help='which directory to be traversed')
+
+CONVERT_PARSER.add_argument('-s', '--suffix', action='store', dest='suffix',
+                            default=None, help=
+                            """which suffix to be traversed. type in '.html,.css'""")
+
+CONVERT_PARSER.add_argument('-i', '--ignore_directory', action='store', dest='ignore_directory',
+                            default=None, help="""ignore director. type in 'dir1,dir1/dir2'""")
+
+CONVERT_PARSER.add_argument('-t', '--to', action='store', dest='convert_to',
+                            default='utf-8', help="""like 'gb2312','utf-8'""")
 
 
 # TODO make it like .gitignore
@@ -211,7 +229,7 @@ def get_file_attrs(extension_dict):
 
 def setup_directory():
     """传进来的positional arguments为列表,但是需要字符串,
-    所以在这个函数强制替换
+    所以在这个函数强制替换得到OPTIONS.directory
     """
     OPTIONS.directory = OPTIONS.directory[0]
 
@@ -224,6 +242,7 @@ if __name__ == '__main__':
         exit(0)
 
     if OPTIONS.command == 'analyze':
+        """分析文件目录信息"""
         setup_directory()
 
         IGNORE_DIRECTORYS = get_ignore_directorys()
@@ -237,3 +256,6 @@ if __name__ == '__main__':
         for file_attr in FILE_ATTRS:
             file_attr.inspect_file()
             print(file_attr)
+
+    if OPTIONS.command == 'convert':
+        print(OPTIONS)
