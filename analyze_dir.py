@@ -1,10 +1,7 @@
 """analyze directory"""
 from optparse import OptionParser
 import os
-import mimetypes
 import chardet
-
-from binary_or_text.binary_or_text import istextfile
 
 parser = OptionParser()
 
@@ -26,6 +23,8 @@ parser.add_option('-v', '--verbose', dest='verbose', action="store_true",
 
 
 class FileAttr():
+    """(文件后缀,所有文件,各种属性统计)的集合"""
+
     def __init__(self, suffix, files):
         self.suffix = suffix
         self.files = files
@@ -39,7 +38,7 @@ class FileAttr():
 
     def __str__(self):
         if self.need_judge:
-            return '{} {} newline: {} encoding: {} size: \
+            rtn_str = '{} {} newline: {} encoding: {} size: \
 {} lines: {} tab_or_space: {}'.format(self.suffix,
                                       self.file_numbers,
                                       self.newlines,
@@ -48,7 +47,9 @@ class FileAttr():
                                       self.lines,
                                       self.tab_or_space)
         else:
-            return '{} {}'.format(self.suffix, self.file_numbers)
+            rtn_str = '{} {}'.format(self.suffix, self.file_numbers)
+
+        return rtn_str
 
     def __lt__(self, other):
         return self.file_numbers < other.file_numbers
@@ -69,6 +70,7 @@ class FileAttr():
 
     @staticmethod
     def sizeof_fmt(num, suffix='B'):
+        """格式化文件大小字符串"""
         for unit in ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi']:
             if abs(num) < 1024.0:
                 return "%3.1f%s%s" % (num, unit, suffix)
@@ -83,9 +85,9 @@ class FileAttr():
 
         """
         new_line_characters = [b'\r\n', b'\r', b'\n', b'']
-        for c in new_line_characters:
-            if line.endswith(c):
-                return c.decode()
+        for character in new_line_characters:
+            if line.endswith(character):
+                return character.decode()
             return None
 
     def inspect_file(self):
@@ -110,9 +112,9 @@ class FileAttr():
         """检查文件换行符,并将统计数据写入当前实例"""
         with open(file, 'rb') as file_handle:
             line = file_handle.readline()
-            c = self.get_new_line(line)
-            if c:
-                self.newlines[c] = self.newlines.get(c, 0) + 1
+            newline_character = self.get_new_line(line)
+            if newline_character:
+                self.newlines[newline_character] = self.newlines.get(newline_character, 0) + 1
 
     def insepect_size(self, file):
         """检查文件大小,并将统计数据写入当前实例"""
@@ -140,27 +142,27 @@ def get_filter_suffixs():
 def get_ignore_directorys():
     """文件目录黑名单,在此黑名单之内的目录不被处理"""
     if options.ignore_directory:
-        ignore_directorys = options.ignore_directory.split(',')
+        _ignore_directorys = options.ignore_directory.split(',')
 
         # exclude absolute directories
-        for idx, directory in enumerate(ignore_directorys):
-            ignore_directorys[idx] = os.path.abspath(
+        for idx, directory in enumerate(_ignore_directorys):
+            _ignore_directorys[idx] = os.path.abspath(
                 os.path.join(options.directory, directory))
 
-        return ignore_directorys
+        return _ignore_directorys
 
     return []
 
 
-def judge_ignore_directorys(ignore_directorys, judge_dir):
+def judge_ignore_directorys(_ignore_directorys, judge_dir):
     """判断文件是否处在文件目录黑名单之内"""
-    for dir in ignore_directorys:
-        if judge_dir.startswith(dir):
+    for directory in _ignore_directorys:
+        if judge_dir.startswith(directory):
             return True
     return False
 
 
-def get_extension_dict(ignore_directorys, filter_suffixs):
+def get_extension_dict(_ignore_directorys, _filter_suffixs):
     """遍历目录获得所有全量文件名
 
     -> {后缀 : 全量文件名列表}
@@ -168,42 +170,42 @@ def get_extension_dict(ignore_directorys, filter_suffixs):
     过滤方式:
     1.黑名单文件夹 2.白名单文件后缀
     """
-    extension_dict = {}
+    _extension_dict = {}
 
-    for root, dirs, files in os.walk(options.directory):
+    for root, _, files in os.walk(options.directory):
         for file in files:
             file = os.path.join(root, file)
             _, file_extension = os.path.splitext(file)
 
             # exclude directory
-            if ignore_directorys:
+            if _ignore_directorys:
                 abspath = os.path.abspath(root)
-                if judge_ignore_directorys(ignore_directorys, abspath):
+                if judge_ignore_directorys(_ignore_directorys, abspath):
                     continue
 
             # only include file
-            if filter_suffixs:
-                if file_extension not in filter_suffixs:
+            if _filter_suffixs:
+                if file_extension not in _filter_suffixs:
                     continue
 
             # like {.html: [A.html, B.html], .py: [A.py, B.py]}
-            extension_dict.setdefault(
+            _extension_dict.setdefault(
                 file_extension, []).append(os.path.abspath(file))
-    return extension_dict
+    return _extension_dict
 
 
-def get_file_attrs(extension_dict):
+def get_file_attrs(_extension_dict):
     """把 {后缀 : 全量文件名列表} 放到FileAttr list里,以文件数量进行排序
 
     -> [FileAttr]
 
     """
-    file_attrs = []
-    for key, value in extension_dict.items():
-        file_attrs.append(FileAttr(key, value))
-    file_attrs.sort(reverse=True)
+    _file_attrs = []
+    for key, value in _extension_dict.items():
+        _file_attrs.append(FileAttr(key, value))
+    _file_attrs.sort(reverse=True)
 
-    return file_attrs
+    return _file_attrs
 
 
 if __name__ == '__main__':
