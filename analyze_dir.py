@@ -53,7 +53,6 @@ class FileAttr():
     def __lt__(self, other):
         return self.file_numbers < other.file_numbers
 
-
     @staticmethod
     def need_judge_text(extension):
         """根据后缀名判断文件是否需要检查"""
@@ -76,12 +75,60 @@ class FileAttr():
             num /= 1024.0
         return "%.1f%s%s" % (num, 'Yi', suffix)
 
+    @staticmethod
+    def get_new_line(line):
+        """获取换行符,line为bytes类型
+        
+        -> string 换行符
+        
+        """
+        new_line_characters = [b'\r\n', b'\r', b'\n', b'']
+        for c in new_line_characters:
+            if line.endswith(c):
+                return c.decode()
+            return None
+
     def inspect_file(self):
         """检查所有文件属性
         1.encoding 2.newline 3.size 4.line 5.tab or space
         """
         for file in self.files:
-            pass
+            if self.need_judge:
+                self.inspect_encoding(file)
+                self.insepect_newline(file)
+                self.insepect_size(file)
+                self.inspect_line(file)
+                self.inspect_tab_or_space(file)
+
+    def inspect_encoding(self, file):
+        """检查文件编码,并将统计数据写入当前实例"""
+        with open(file, 'rb') as file_handle:
+            encoding = chardet.detect(file_handle.read())['encoding']
+            self.encodings[encoding] = self.encodings.get(encoding, 0) + 1
+
+    def insepect_newline(self, file):
+        """检查文件换行符,并将统计数据写入当前实例"""
+        with open(file, 'rb') as file_handle:
+            line = file_handle.readline()
+            c = self.get_new_line(line)
+            if c:
+                self.newlines[c] = self.newlines.get(c, 0) + 1
+
+    def insepect_size(self, file):
+        """检查文件大小,并将统计数据写入当前实例"""
+        self.size = self.size + os.path.getsize(file)
+
+    def inspect_line(self, file):
+        """检查文件行数,并将统计数据写入当前实例"""
+        self.lines = self.lines + sum(1 for line in open(file, 'rb'))
+
+    def inspect_tab_or_space(self, file):
+        """检查文件是空格还是跳格,并将统计数据写入当前实例"""
+        with open(file, 'rb') as file_handle:
+            if file_handle.read(1000).find(b'\t') != -1:
+                self.tab_or_space['\t'] = self.tab_or_space.get('\t', 0) + 1
+            else:
+                self.tab_or_space['space'] = self.tab_or_space.get('space', 0) + 1
 
 
 def get_filter_suffixs():
