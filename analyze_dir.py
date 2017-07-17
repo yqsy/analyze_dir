@@ -3,22 +3,22 @@ from optparse import OptionParser
 import os
 import chardet
 
-parser = OptionParser()
+PARSER = OptionParser()
 
-parser.add_option('-d', '--dir', dest='directory', default='.',
+PARSER.add_option('-d', '--dir', dest='directory', default='.',
                   help='which directory to be traversed')
 
-parser.add_option('-s', '--suffix', dest='suffix', default=None,
+PARSER.add_option('-s', '--suffix', dest='suffix', default=None,
                   help="""which suffix to be traversed. type in '.html,.css'""")
 
 # TODO make it like .gitignore
 # only directory ok
 # all directory and files
 # Relative directory and files
-parser.add_option('-i', '--ignore_directory', dest='ignore_directory', default=None,
+PARSER.add_option('-i', '--ignore_directory', dest='ignore_directory', default=None,
                   help="""ignore director. type in 'dir1,dir1/dir2'""")
 
-parser.add_option('-v', '--verbose', dest='verbose', action="store_true",
+PARSER.add_option('-v', '--verbose', dest='verbose', action="store_true",
                   help='verbose')
 
 
@@ -136,33 +136,33 @@ class FileAttr():
 
 def get_filter_suffixs():
     """后缀白名单,在此白名单之内才会被处理"""
-    return options.suffix.split(',') if options.suffix else []
+    return OPTIONS.suffix.split(',') if OPTIONS.suffix else []
 
 
 def get_ignore_directorys():
     """文件目录黑名单,在此黑名单之内的目录不被处理"""
-    if options.ignore_directory:
-        _ignore_directorys = options.ignore_directory.split(',')
+    if OPTIONS.ignore_directory:
+        ignore_directorys = OPTIONS.ignore_directory.split(',')
 
         # exclude absolute directories
-        for idx, directory in enumerate(_ignore_directorys):
-            _ignore_directorys[idx] = os.path.abspath(
-                os.path.join(options.directory, directory))
+        for idx, directory in enumerate(ignore_directorys):
+            ignore_directorys[idx] = os.path.abspath(
+                os.path.join(OPTIONS.directory, directory))
 
-        return _ignore_directorys
+        return ignore_directorys
 
     return []
 
 
-def judge_ignore_directorys(_ignore_directorys, judge_dir):
+def judge_ignore_directorys(ignore_directorys, judge_dir):
     """判断文件是否处在文件目录黑名单之内"""
-    for directory in _ignore_directorys:
+    for directory in ignore_directorys:
         if judge_dir.startswith(directory):
             return True
     return False
 
 
-def get_extension_dict(_ignore_directorys, _filter_suffixs):
+def get_extension_dict(ignore_directorys, filter_suffixs):
     """遍历目录获得所有全量文件名
 
     -> {后缀 : 全量文件名列表}
@@ -170,55 +170,55 @@ def get_extension_dict(_ignore_directorys, _filter_suffixs):
     过滤方式:
     1.黑名单文件夹 2.白名单文件后缀
     """
-    _extension_dict = {}
+    extension_dict = {}
 
-    for root, _, files in os.walk(options.directory):
+    for root, _, files in os.walk(OPTIONS.directory):
         for file in files:
             file = os.path.join(root, file)
             _, file_extension = os.path.splitext(file)
 
             # exclude directory
-            if _ignore_directorys:
+            if ignore_directorys:
                 abspath = os.path.abspath(root)
-                if judge_ignore_directorys(_ignore_directorys, abspath):
+                if judge_ignore_directorys(ignore_directorys, abspath):
                     continue
 
             # only include file
-            if _filter_suffixs:
-                if file_extension not in _filter_suffixs:
+            if filter_suffixs:
+                if file_extension not in filter_suffixs:
                     continue
 
             # like {.html: [A.html, B.html], .py: [A.py, B.py]}
-            _extension_dict.setdefault(
+            extension_dict.setdefault(
                 file_extension, []).append(os.path.abspath(file))
-    return _extension_dict
+    return extension_dict
 
 
-def get_file_attrs(_extension_dict):
+def get_file_attrs(extension_dict):
     """把 {后缀 : 全量文件名列表} 放到FileAttr list里,以文件数量进行排序
 
     -> [FileAttr]
 
     """
-    _file_attrs = []
-    for key, value in _extension_dict.items():
-        _file_attrs.append(FileAttr(key, value))
-    _file_attrs.sort(reverse=True)
+    file_attrs = []
+    for key, value in extension_dict.items():
+        file_attrs.append(FileAttr(key, value))
+    file_attrs.sort(reverse=True)
 
-    return _file_attrs
+    return file_attrs
 
 
 if __name__ == '__main__':
-    (options, args) = parser.parse_args()
+    (OPTIONS, ARGS) = PARSER.parse_args()
 
-    filter_suffixs = get_filter_suffixs()
+    FILTER_SUFFIXS = get_filter_suffixs()
 
-    ignore_directorys = get_ignore_directorys()
+    IGNORE_DIRECTORYS = get_ignore_directorys()
 
-    extension_dict = get_extension_dict(ignore_directorys, filter_suffixs)
+    EXTENSION_DICT = get_extension_dict(IGNORE_DIRECTORYS, FILTER_SUFFIXS)
 
-    file_attrs = get_file_attrs(extension_dict)
+    FILE_ATTRS = get_file_attrs(EXTENSION_DICT)
 
-    for file_attr in file_attrs:
+    for file_attr in FILE_ATTRS:
         file_attr.inspect_file()
         print(file_attr)
