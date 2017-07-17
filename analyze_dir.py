@@ -28,7 +28,7 @@ class FileAttr():
     def __init__(self, suffix, files):
         self.suffix = suffix
         self.files = files
-        self.file_numbers = len(files)
+        self.file_numbers = len(self.files)
         self.newlines = {}
         self.encodings = {}
         self.size = 0
