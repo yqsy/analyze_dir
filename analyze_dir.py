@@ -78,13 +78,15 @@ class FileAttr():
         return self.file_numbers < other.file_numbers
 
 
+def get_filter_suffixs():
+    return options.suffix.split(',') if options.suffix else []
+
 if __name__ == '__main__':
     (options, args) = parser.parse_args()
 
     extension_dict = {}
 
-    if options.suffix:
-        filter_suffixs = options.suffix.split(',')
+    filter_suffixs = get_filter_suffixs()
 
     if options.ignore_directory:
         ignore_directorys = options.ignore_directory.split(',')
