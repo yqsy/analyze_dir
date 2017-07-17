@@ -35,7 +35,7 @@ class FileAttr():
         self.size = 0
         self.lines = 0
         self.tab_or_space = {}
-        self.need_judge = False
+        self.need_judge = True if self.need_judge_text(self.suffix) else False
 
     def __str__(self):
         if self.need_judge:
@@ -53,11 +53,10 @@ class FileAttr():
     def __lt__(self, other):
         return self.file_numbers < other.file_numbers
 
+
     @staticmethod
-    def need_judge_text(file):
+    def need_judge_text(extension):
         """根据后缀名判断文件是否需要检查"""
-        head, tail = os.path.split(file)
-        _, extension = os.path.splitext(tail)
 
         include_extensions = ['.py', '.html', '.js', '.css', '.conf',
                               '.txt', '.sh', '.pas', '.sql', '.sqc',
@@ -81,7 +80,8 @@ class FileAttr():
         """检查所有文件属性
         1.encoding 2.newline 3.size 4.line 5.tab or space
         """
-        
+        for file in self.files:
+            pass
 
 
 def get_filter_suffixs():
