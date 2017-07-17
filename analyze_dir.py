@@ -81,13 +81,8 @@ class FileAttr():
 def get_filter_suffixs():
     return options.suffix.split(',') if options.suffix else []
 
-if __name__ == '__main__':
-    (options, args) = parser.parse_args()
 
-    extension_dict = {}
-
-    filter_suffixs = get_filter_suffixs()
-
+def get_ignore_directorys():
     if options.ignore_directory:
         ignore_directorys = options.ignore_directory.split(',')
 
@@ -96,11 +91,27 @@ if __name__ == '__main__':
             ignore_directorys[idx] = os.path.abspath(
                 os.path.join(options.directory, directory))
 
+        return ignore_directorys
+
+    return []
+
+
+if __name__ == '__main__':
+    (options, args) = parser.parse_args()
+
+    extension_dict = {}
+
+    filter_suffixs = get_filter_suffixs()
+
+    ignore_directorys = get_ignore_directorys()
+
+
     def judge_ignore_directorys(judge_dir):
         for dir in ignore_directorys:
             if judge_dir.startswith(dir):
                 return True
         return False
+
 
     for root, dirs, files in os.walk(options.directory):
         for file in files:
@@ -152,12 +163,14 @@ if __name__ == '__main__':
                 with open(file, 'rb') as f:
                     line = f.readline()
 
+
                     def get_new_line(line):
                         new_line_characters = [b'\r\n', b'\r', b'\n', b'']
                         for c in new_line_characters:
                             if line.endswith(c):
                                 return c.decode()
                         return None
+
 
                     c = get_new_line(line)
                     if c != None:
@@ -176,7 +189,7 @@ if __name__ == '__main__':
             # line
             if need_judge:
                 file_attr.lines = file_attr.lines + \
-                    sum(1 for line in open(file, 'rb'))
+                                  sum(1 for line in open(file, 'rb'))
 
             # tab or space
             if need_judge:
