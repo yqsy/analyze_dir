@@ -96,6 +96,13 @@ def get_ignore_directorys():
     return []
 
 
+def judge_ignore_directorys(ignore_directorys, judge_dir):
+    for dir in ignore_directorys:
+        if judge_dir.startswith(dir):
+            return True
+    return False
+
+
 if __name__ == '__main__':
     (options, args) = parser.parse_args()
 
@@ -105,14 +112,6 @@ if __name__ == '__main__':
 
     ignore_directorys = get_ignore_directorys()
 
-
-    def judge_ignore_directorys(judge_dir):
-        for dir in ignore_directorys:
-            if judge_dir.startswith(dir):
-                return True
-        return False
-
-
     for root, dirs, files in os.walk(options.directory):
         for file in files:
             file = os.path.join(root, file)
@@ -121,7 +120,7 @@ if __name__ == '__main__':
             # exclude directory
             if options.ignore_directory:
                 abspath = os.path.abspath(root)
-                if judge_ignore_directorys(abspath):
+                if judge_ignore_directorys(ignore_directorys, abspath):
                     continue
 
             # only include file
