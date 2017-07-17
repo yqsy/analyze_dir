@@ -18,9 +18,6 @@ PARSER.add_option('-s', '--suffix', dest='suffix', default=None,
 PARSER.add_option('-i', '--ignore_directory', dest='ignore_directory', default=None,
                   help="""ignore director. type in 'dir1,dir1/dir2'""")
 
-PARSER.add_option('-v', '--verbose', dest='verbose', action="store_true",
-                  help='verbose')
-
 
 class FileAttr():
     """(文件后缀,所有文件,各种属性统计)的集合"""
