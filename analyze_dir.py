@@ -26,6 +26,7 @@ parser.add_option('-v', '--verbose', dest='verbose', action="store_true",
 
 
 def need_judge_text(file):
+    """根据后缀名判断文件是否需要检查"""
     head, tail = os.path.split(file)
     _, extension = os.path.splitext(tail)
 
@@ -224,7 +225,5 @@ if __name__ == '__main__':
                         file_attr.tab_or_space[r'space'] = file_attr.tab_or_space.get(
                             r'space', 0) + 1
 
-            if options.verbose:
-                print('{} encoding:{}'.format(file, encoding))
 
         print(file_attr)
