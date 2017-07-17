@@ -138,6 +138,20 @@ def get_extension_dict(ignore_directorys, filter_suffixs):
     return extension_dict
 
 
+def get_file_attrs(extension_dict):
+    """把 {后缀 : 全量文件名列表} 放到FileAttr list里,以文件数量进行排序
+    
+    -> [FileAttr]
+    
+    """
+    file_attrs = []
+    for key, value in extension_dict.items():
+        file_attrs.append(FileAttr(key, value))
+    file_attrs.sort(reverse=True)
+
+    return file_attrs
+
+
 if __name__ == '__main__':
     (options, args) = parser.parse_args()
 
@@ -147,12 +161,7 @@ if __name__ == '__main__':
 
     extension_dict = get_extension_dict(ignore_directorys, filter_suffixs)
 
-    file_attrs = []
-
-    # put in list, and reverse sort by file's num
-    for key, value in extension_dict.items():
-        file_attrs.append(FileAttr(key, value))
-    file_attrs.sort(reverse=True)
+    file_attrs = get_file_attrs(extension_dict)
 
     for file_attr in file_attrs:
         for file in file_attr.files:
