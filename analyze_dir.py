@@ -242,7 +242,7 @@ if __name__ == '__main__':
         exit(0)
 
     if OPTIONS.command == 'analyze':
-        """分析文件目录信息"""
+        # 分析文件目录信息
         setup_directory()
 
         IGNORE_DIRECTORYS = get_ignore_directorys()
