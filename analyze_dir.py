@@ -1,21 +1,26 @@
 """analyze directory"""
 import os
+import argparse
 import chardet
 
-# PARSER = OptionParser()
-#
-# PARSER.add_option('-d', '--dir', dest='directory', default='.',
-#                   help='which directory to be traversed')
-#
-# PARSER.add_option('-s', '--suffix', dest='suffix', default=None,
-#                   help="""which suffix to be traversed. type in '.html,.css'""")
+PARSER = argparse.ArgumentParser()
+
+SUBPARSER = PARSER.add_subparsers(help='commands', dest='command')
+
+ANALYZE_PARSER = SUBPARSER.add_parser('analyze', help='analyze directory')
+ANALYZE_PARSER.add_argument('directory', metavar='directory',
+                            nargs=1, help='which directory to be traversed')
+ANALYZE_PARSER.add_argument('-s', '--suffix', action='store', dest='suffix',
+                            default=None, help=
+                            """which suffix to be traversed. type in '.html,.css'""")
+ANALYZE_PARSER.add_argument('-i', '--ignore_directory', action='store', dest='ignore_directory',
+                            default=None, help="""ignore director. type in 'dir1,dir1/dir2'""")
+
 
 # TODO make it like .gitignore
 # only directory ok
 # all directory and files
 # Relative directory and files
-# PARSER.add_option('-i', '--ignore_directory', dest='ignore_directory', default=None,
-#                   help="""ignore director. type in 'dir1,dir1/dir2'""")
 
 
 class FileAttr():
@@ -204,18 +209,31 @@ def get_file_attrs(extension_dict):
     return file_attrs
 
 
+def setup_directory():
+    """传进来的positional arguments为列表,但是需要字符串,
+    所以在这个函数强制替换
+    """
+    OPTIONS.directory = OPTIONS.directory[0]
+
+
 if __name__ == '__main__':
-    # (OPTIONS, ARGS) = PARSER.parse_args()
-    #
-    # IGNORE_DIRECTORYS = get_ignore_directorys()
-    #
-    # FILTER_SUFFIXS = get_filter_suffixs()
-    #
-    # EXTENSION_DICT = get_extension_dict(IGNORE_DIRECTORYS, FILTER_SUFFIXS)
-    #
-    # FILE_ATTRS = get_file_attrs(EXTENSION_DICT)
-    #
-    # for file_attr in FILE_ATTRS:
-    #     file_attr.inspect_file()
-    #     print(file_attr)
-    pass
+    OPTIONS = PARSER.parse_args()
+
+    if not OPTIONS.command:
+        PARSER.print_help()
+        exit(0)
+
+    if OPTIONS.command == 'analyze':
+        setup_directory()
+
+        IGNORE_DIRECTORYS = get_ignore_directorys()
+
+        FILTER_SUFFIXS = get_filter_suffixs()
+
+        EXTENSION_DICT = get_extension_dict(IGNORE_DIRECTORYS, FILTER_SUFFIXS)
+
+        FILE_ATTRS = get_file_attrs(EXTENSION_DICT)
+
+        for file_attr in FILE_ATTRS:
+            file_attr.inspect_file()
+            print(file_attr)
