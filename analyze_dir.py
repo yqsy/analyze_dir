@@ -211,9 +211,9 @@ def get_file_attrs(extension_dict):
 if __name__ == '__main__':
     (OPTIONS, ARGS) = PARSER.parse_args()
 
-    FILTER_SUFFIXS = get_filter_suffixs()
-
     IGNORE_DIRECTORYS = get_ignore_directorys()
+
+    FILTER_SUFFIXS = get_filter_suffixs()
 
     EXTENSION_DICT = get_extension_dict(IGNORE_DIRECTORYS, FILTER_SUFFIXS)
 
