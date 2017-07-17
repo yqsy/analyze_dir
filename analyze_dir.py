@@ -106,14 +106,15 @@ def judge_ignore_directorys(ignore_directorys, judge_dir):
     return False
 
 
-if __name__ == '__main__':
-    (options, args) = parser.parse_args()
-
+def get_extension_dict(ignore_directorys, filter_suffixs):
+    """遍历目录获得所有全量文件名
+    
+    -> {后缀 : 全量文件名列表}
+    
+    过滤方式:
+    1.黑名单文件夹 2.白名单文件后缀
+    """
     extension_dict = {}
-
-    filter_suffixs = get_filter_suffixs()
-
-    ignore_directorys = get_ignore_directorys()
 
     for root, dirs, files in os.walk(options.directory):
         for file in files:
@@ -134,6 +135,17 @@ if __name__ == '__main__':
             # like {.html: [A.html, B.html], .py: [A.py, B.py]}
             extension_dict.setdefault(
                 file_extension, []).append(os.path.abspath(file))
+    return extension_dict
+
+
+if __name__ == '__main__':
+    (options, args) = parser.parse_args()
+
+    filter_suffixs = get_filter_suffixs()
+
+    ignore_directorys = get_ignore_directorys()
+
+    extension_dict = get_extension_dict(ignore_directorys, filter_suffixs)
 
     file_attrs = []
 
