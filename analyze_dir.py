@@ -121,13 +121,13 @@ if __name__ == '__main__':
             _, file_extension = os.path.splitext(file)
 
             # exclude directory
-            if options.ignore_directory:
+            if ignore_directorys:
                 abspath = os.path.abspath(root)
                 if judge_ignore_directorys(ignore_directorys, abspath):
                     continue
 
             # only include file
-            if options.suffix:
+            if filter_suffixs:
                 if file_extension not in filter_suffixs:
                     continue
 
