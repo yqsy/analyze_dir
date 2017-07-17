@@ -79,10 +79,12 @@ class FileAttr():
 
 
 def get_filter_suffixs():
+    """后缀白名单,在此白名单之内才会被处理"""
     return options.suffix.split(',') if options.suffix else []
 
 
 def get_ignore_directorys():
+    """文件目录黑名单,在此黑名单之内的目录不被处理"""
     if options.ignore_directory:
         ignore_directorys = options.ignore_directory.split(',')
 
@@ -97,6 +99,7 @@ def get_ignore_directorys():
 
 
 def judge_ignore_directorys(ignore_directorys, judge_dir):
+    """判断文件是否处在文件目录黑名单之内"""
     for dir in ignore_directorys:
         if judge_dir.startswith(dir):
             return True
