@@ -1,22 +1,21 @@
 """analyze directory"""
-from optparse import OptionParser
 import os
 import chardet
 
-PARSER = OptionParser()
-
-PARSER.add_option('-d', '--dir', dest='directory', default='.',
-                  help='which directory to be traversed')
-
-PARSER.add_option('-s', '--suffix', dest='suffix', default=None,
-                  help="""which suffix to be traversed. type in '.html,.css'""")
+# PARSER = OptionParser()
+#
+# PARSER.add_option('-d', '--dir', dest='directory', default='.',
+#                   help='which directory to be traversed')
+#
+# PARSER.add_option('-s', '--suffix', dest='suffix', default=None,
+#                   help="""which suffix to be traversed. type in '.html,.css'""")
 
 # TODO make it like .gitignore
 # only directory ok
 # all directory and files
 # Relative directory and files
-PARSER.add_option('-i', '--ignore_directory', dest='ignore_directory', default=None,
-                  help="""ignore director. type in 'dir1,dir1/dir2'""")
+# PARSER.add_option('-i', '--ignore_directory', dest='ignore_directory', default=None,
+#                   help="""ignore director. type in 'dir1,dir1/dir2'""")
 
 
 class FileAttr():
@@ -206,16 +205,17 @@ def get_file_attrs(extension_dict):
 
 
 if __name__ == '__main__':
-    (OPTIONS, ARGS) = PARSER.parse_args()
-
-    IGNORE_DIRECTORYS = get_ignore_directorys()
-
-    FILTER_SUFFIXS = get_filter_suffixs()
-
-    EXTENSION_DICT = get_extension_dict(IGNORE_DIRECTORYS, FILTER_SUFFIXS)
-
-    FILE_ATTRS = get_file_attrs(EXTENSION_DICT)
-
-    for file_attr in FILE_ATTRS:
-        file_attr.inspect_file()
-        print(file_attr)
+    # (OPTIONS, ARGS) = PARSER.parse_args()
+    #
+    # IGNORE_DIRECTORYS = get_ignore_directorys()
+    #
+    # FILTER_SUFFIXS = get_filter_suffixs()
+    #
+    # EXTENSION_DICT = get_extension_dict(IGNORE_DIRECTORYS, FILTER_SUFFIXS)
+    #
+    # FILE_ATTRS = get_file_attrs(EXTENSION_DICT)
+    #
+    # for file_attr in FILE_ATTRS:
+    #     file_attr.inspect_file()
+    #     print(file_attr)
+    pass
