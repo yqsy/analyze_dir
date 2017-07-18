@@ -32,7 +32,7 @@ CONVERT_PARSER.add_argument('-i', '--ignore_directory', action='store', dest='ig
                             default=None, help="""ignore director. type in 'dir1,dir1/dir2'""")
 
 CONVERT_PARSER.add_argument('-f', '--from', action='store', dest='convert_from',
-                            default='utf-8', help="""like 'gb2312','utf-8' default is gb2312""")
+                            default='gb2312', help="""like 'gb2312','utf-8' default is gb2312""")
 
 CONVERT_PARSER.add_argument('-t', '--to', action='store', dest='convert_to',
                             default='utf-8', help="""like 'gb2312','utf-8' default is utf-8""")
@@ -89,6 +89,11 @@ class FileAttr():
             return True
 
         return False
+
+    @staticmethod
+    def need_convert(extension):
+        """根据后缀名判断文件是否需要转换"""
+        return FileAttr.need_judge_text(extension)
 
     @staticmethod
     def sizeof_fmt(num, suffix='B'):
@@ -184,7 +189,7 @@ def judge_ignore_directorys(ignore_directorys, judge_dir):
     return False
 
 
-def get_extension_dict(ignore_directorys, filter_suffixs):
+def get_extension_dict(directory, ignore_directorys, filter_suffixs):
     """遍历目录获得所有全量文件名
 
     -> {后缀 : 全量文件名列表}
@@ -194,7 +199,7 @@ def get_extension_dict(ignore_directorys, filter_suffixs):
     """
     extension_dict = {}
 
-    for root, _, files in os.walk(OPTIONS.directory):
+    for root, _, files in os.walk(directory):
         for file in files:
             file = os.path.join(root, file)
             _, file_extension = os.path.splitext(file)
@@ -249,10 +254,8 @@ if __name__ == '__main__':
         setup_directory()
 
         IGNORE_DIRECTORYS = get_ignore_directorys()
-
         FILTER_SUFFIXS = get_filter_suffixs()
-
-        EXTENSION_DICT = get_extension_dict(IGNORE_DIRECTORYS, FILTER_SUFFIXS)
+        EXTENSION_DICT = get_extension_dict(OPTIONS.directory, IGNORE_DIRECTORYS, FILTER_SUFFIXS)
 
         FILE_ATTRS = get_file_attrs(EXTENSION_DICT)
 
@@ -261,4 +264,11 @@ if __name__ == '__main__':
             print(file_attr)
 
     if OPTIONS.command == 'convert':
-        print(OPTIONS)
+        # 转换文件
+        setup_directory()
+
+        IGNORE_DIRECTORYS = get_ignore_directorys()
+        FILTER_SUFFIXS = get_filter_suffixs()
+        EXTENSION_DICT = get_extension_dict(OPTIONS.directory, IGNORE_DIRECTORYS, FILTER_SUFFIXS)
+
+        print(EXTENSION_DICT)
