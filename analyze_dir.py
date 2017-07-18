@@ -31,8 +31,11 @@ CONVERT_PARSER.add_argument('-s', '--suffix', action='store', dest='suffix',
 CONVERT_PARSER.add_argument('-i', '--ignore_directory', action='store', dest='ignore_directory',
                             default=None, help="""ignore director. type in 'dir1,dir1/dir2'""")
 
+CONVERT_PARSER.add_argument('-f', '--from', action='store', dest='convert_from',
+                            default='utf-8', help="""like 'gb2312','utf-8' default is gb2312""")
+
 CONVERT_PARSER.add_argument('-t', '--to', action='store', dest='convert_to',
-                            default='utf-8', help="""like 'gb2312','utf-8'""")
+                            default='utf-8', help="""like 'gb2312','utf-8' default is utf-8""")
 
 
 # TODO make it like .gitignore
