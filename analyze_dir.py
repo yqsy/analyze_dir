@@ -48,6 +48,7 @@ class FileAttr():
     """(文件后缀,所有文件,各种属性统计)的集合"""
 
     def __init__(self, suffix, files):
+        """后缀,文件列表"""
         self.suffix = suffix
         self.files = files
         self.file_numbers = len(self.files)
@@ -57,6 +58,7 @@ class FileAttr():
         self.lines = 0
         self.tab_or_space = {}
         self.need_judge = True if self.need_judge_text(self.suffix) else False
+        self.need_convert = True if self.need_convert_text(self.suffix) else False
 
     def __str__(self):
         if self.need_judge:
@@ -91,7 +93,7 @@ class FileAttr():
         return False
 
     @staticmethod
-    def need_convert(extension):
+    def need_convert_text(extension):
         """根据后缀名判断文件是否需要转换"""
         return FileAttr.need_judge_text(extension)
 
@@ -192,7 +194,7 @@ def judge_ignore_directorys(ignore_directorys, judge_dir):
 def get_extension_dict(directory, ignore_directorys, filter_suffixs):
     """遍历目录获得所有全量文件名
 
-    -> {后缀 : 全量文件名列表}
+    -> {后缀 : 文件列表}
 
     过滤方式:
     1.黑名单文件夹 2.白名单文件后缀
@@ -271,4 +273,7 @@ if __name__ == '__main__':
         FILTER_SUFFIXS = get_filter_suffixs()
         EXTENSION_DICT = get_extension_dict(OPTIONS.directory, IGNORE_DIRECTORYS, FILTER_SUFFIXS)
 
-        print(EXTENSION_DICT)
+        FILE_ATTRS = get_file_attrs(EXTENSION_DICT)
+
+        for file_attr in FILE_ATTRS:
+            pass
