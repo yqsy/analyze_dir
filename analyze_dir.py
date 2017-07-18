@@ -2,6 +2,8 @@
 import os
 import argparse
 import chardet
+import colorama
+from termcolor import colored
 
 PARSER = argparse.ArgumentParser()
 
@@ -147,16 +149,16 @@ class FileAttr():
                 if from_encoding.lower() == bytes_encoding.lower():
                     try:
                         write_bytes = (read_bytes.decode(from_encoding)).encode(to_encoding)
-                    except(UnicodeDecodeError):
-                        print('error! {file} convert from {from_encoding} to {to_encoding}'.format(
-                            file=file, from_encoding=from_encoding, to_encoding=to_encoding))
+                    except UnicodeDecodeError as err:
+                        print(colored('{file} convert from {from_encoding} to {to_encoding},err={err}'.format(
+                            file=file, from_encoding=from_encoding, to_encoding=to_encoding, err=err), 'red'))
                         continue
 
             if write_bytes:
                 with open(file, 'wb') as file_handle:
                     file_handle.write(write_bytes)
-                    print('{file} convert from {from_encoding} to {to_encoding}'.format(
-                        file=file, from_encoding=from_encoding, to_encoding=to_encoding))
+                    print(colored('{file} convert from {from_encoding} to {to_encoding}'.format(
+                        file=file, from_encoding=from_encoding, to_encoding=to_encoding), 'green'))
 
     def __inspect_encoding(self, file):
         """检查文件编码,并将统计数据写入当前实例"""
@@ -273,6 +275,10 @@ def setup_directory():
 
 if __name__ == '__main__':
     OPTIONS = PARSER.parse_args()
+
+    # 打印不出颜色才执行这句
+    # reference https://github.com/spyder-ide/spyder/issues/1917
+    colorama.init(strip=False)
 
     if not OPTIONS.command:
         PARSER.print_help()
