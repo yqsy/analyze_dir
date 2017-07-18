@@ -44,6 +44,7 @@ CONVERT_PARSER.add_argument('-t', '--to', action='store', dest='convert_to',
 # Relative directory and files
 
 
+
 class FileAttr():
     """(文件后缀,所有文件,各种属性统计)的集合"""
 
@@ -144,12 +145,17 @@ class FileAttr():
                 if not bytes_encoding:
                     continue
                 if from_encoding.lower() == bytes_encoding.lower():
-                    write_bytes = (read_bytes.decode(from_encoding)).encode(to_encoding)
+                    try:
+                        write_bytes = (read_bytes.decode(from_encoding)).encode(to_encoding)
+                    except(UnicodeDecodeError):
+                        print('error! {file} convert from {from_encoding} to {to_encoding}'.format(
+                            file=file, from_encoding=from_encoding, to_encoding=to_encoding))
+                        continue
 
             if write_bytes:
                 with open(file, 'wb') as file_handle:
                     file_handle.write(write_bytes)
-                    print(file, '{file} convert from {from_encoding} to {to_encoding}'.format(
+                    print('{file} convert from {from_encoding} to {to_encoding}'.format(
                         file=file, from_encoding=from_encoding, to_encoding=to_encoding))
 
     def __inspect_encoding(self, file):
