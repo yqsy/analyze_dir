@@ -131,9 +131,22 @@ class FileAttr():
                 self.__inspect_line(file)
                 self.__inspect_tab_or_space(file)
 
-    def convert_encoding(self, file, from_encoding, to_encoding):
+    def convert_encoding(self, from_encoding, to_encoding):
         """转换文件编码"""
-        pass
+        if not self.need_convert:
+            return
+
+        for file in self.files:
+            write_bytes = None
+            with open(file, 'rb') as file_handle:
+                read_bytes = file_handle.read()
+                bytes_encoding = chardet.detect(read_bytes)['encoding']
+                if from_encoding.lower() == bytes_encoding.lower():
+                    write_bytes = (read_bytes.decode(from_encoding)).encode(to_encoding)
+
+            if write_bytes:
+                with open(file, 'wb') as file_handle:
+                    file_handle.write(write_bytes)
 
     def __inspect_encoding(self, file):
         """检查文件编码,并将统计数据写入当前实例"""
@@ -280,4 +293,4 @@ if __name__ == '__main__':
         FILE_ATTRS = get_file_attrs(EXTENSION_DICT)
 
         for file_attr in FILE_ATTRS:
-            pass
+            file_attr.convert_encoding(OPTIONS.convert_from, OPTIONS.convert_to)
