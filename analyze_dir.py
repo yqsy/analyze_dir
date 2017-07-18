@@ -141,6 +141,8 @@ class FileAttr():
             with open(file, 'rb') as file_handle:
                 read_bytes = file_handle.read()
                 bytes_encoding = chardet.detect(read_bytes)['encoding']
+                if not bytes_encoding:
+                    continue
                 if from_encoding.lower() == bytes_encoding.lower():
                     write_bytes = (read_bytes.decode(from_encoding)).encode(to_encoding)
 
