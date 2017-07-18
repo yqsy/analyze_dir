@@ -149,6 +149,8 @@ class FileAttr():
             if write_bytes:
                 with open(file, 'wb') as file_handle:
                     file_handle.write(write_bytes)
+                    print(file, '{file} convert from {from_encoding} to {to_encoding}'.format(
+                        file=file, from_encoding=from_encoding, to_encoding=to_encoding))
 
     def __inspect_encoding(self, file):
         """检查文件编码,并将统计数据写入当前实例"""
@@ -285,7 +287,7 @@ if __name__ == '__main__':
             print(file_attr)
 
     if OPTIONS.command == 'convert':
-        # 转换文件
+        # 转换文件编码
         setup_directory()
 
         IGNORE_DIRECTORYS = get_ignore_directorys()
