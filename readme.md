@@ -39,3 +39,8 @@ analyze_dir) D:\reference\project\analyze_dir>python analyze_dir.py analyze -i .
 .ttf 1
 .md 1
 ```
+
+```
+$ python analyze_dir.py convert -i .git,.idea .
+C:\work\source\my\analyze_dir\1.txt C:\work\source\my\analyze_dir\1.txt convert from gb2312 to utf-8
+```
