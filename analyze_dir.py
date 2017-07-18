@@ -38,7 +38,7 @@ CONVERT_PARSER.add_argument('-t', '--to', action='store', dest='convert_to',
                             default='utf-8', help="""like 'gb2312','utf-8' default is utf-8""")
 
 
-# TODO make it like .gitignore
+# TODO make -i like .gitignore
 # only directory ok
 # all directory and files
 # Relative directory and files
@@ -123,21 +123,25 @@ class FileAttr():
         """检查所有文件属性
         1.encoding 2.newline 3.size 4.line 5.tab or space
         """
-        for file in self.files:
-            if self.need_judge:
-                self.inspect_encoding(file)
-                self.insepect_newline(file)
-                self.insepect_size(file)
-                self.inspect_line(file)
-                self.inspect_tab_or_space(file)
+        if self.need_judge:
+            for file in self.files:
+                self.__inspect_encoding(file)
+                self.__inspect_newline(file)
+                self.__inspect_size(file)
+                self.__inspect_line(file)
+                self.__inspect_tab_or_space(file)
 
-    def inspect_encoding(self, file):
+    def convert_encoding(self, file, from_encoding, to_encoding):
+        """转换文件编码"""
+        pass
+
+    def __inspect_encoding(self, file):
         """检查文件编码,并将统计数据写入当前实例"""
         with open(file, 'rb') as file_handle:
             encoding = chardet.detect(file_handle.read())['encoding']
             self.encodings[encoding] = self.encodings.get(encoding, 0) + 1
 
-    def insepect_newline(self, file):
+    def __inspect_newline(self, file):
         """检查文件换行符,并将统计数据写入当前实例"""
         with open(file, 'rb') as file_handle:
             line = file_handle.readline()
@@ -145,15 +149,15 @@ class FileAttr():
             if newline_character:
                 self.newlines[newline_character] = self.newlines.get(newline_character, 0) + 1
 
-    def insepect_size(self, file):
+    def __inspect_size(self, file):
         """检查文件大小,并将统计数据写入当前实例"""
         self.size = self.size + os.path.getsize(file)
 
-    def inspect_line(self, file):
+    def __inspect_line(self, file):
         """检查文件行数,并将统计数据写入当前实例"""
         self.lines = self.lines + sum(1 for line in open(file, 'rb'))
 
-    def inspect_tab_or_space(self, file):
+    def __inspect_tab_or_space(self, file):
         """检查文件是空格还是跳格,并将统计数据写入当前实例"""
         with open(file, 'rb') as file_handle:
             if file_handle.read(1000).find(b'\t') != -1:
@@ -224,7 +228,7 @@ def get_extension_dict(directory, ignore_directorys, filter_suffixs):
 
 
 def get_file_attrs(extension_dict):
-    """把 {后缀 : 全量文件名列表} 放到FileAttr list里,以文件数量进行排序
+    """把 {后缀 : 文件列表} 放到FileAttr list里,以文件数量进行排序
 
     -> [FileAttr]
 
