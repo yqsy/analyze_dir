@@ -1,6 +1,7 @@
 """analyze directory"""
 import os
 import argparse
+from collections import Counter
 import chardet
 import colorama
 from termcolor import colored
@@ -55,11 +56,11 @@ class FileAttr():
         self.suffix = suffix
         self.files = files
         self.file_numbers = len(self.files)
-        self.newlines = {}
-        self.encodings = {}
+        self.newlines_counter = Counter()
+        self.encodings_counter = Counter()
         self.size = 0
         self.lines = 0
-        self.tab_or_space = {}
+        self.tab_or_space_counter = Counter()
         self.need_judge = True if self.need_judge_text(self.suffix) else False
         self.need_convert = True if self.need_convert_text(self.suffix) else False
 
@@ -68,11 +69,11 @@ class FileAttr():
             rtn_str = '{} {} newline: {} encoding: {} size: \
 {} lines: {} tab_or_space: {}'.format(self.suffix,
                                       self.file_numbers,
-                                      self.newlines,
-                                      self.encodings,
+                                      self.newlines_counter,
+                                      self.encodings_counter,
                                       self.sizeof_fmt(self.size),
                                       self.lines,
-                                      self.tab_or_space)
+                                      self.tab_or_space_counter)
         else:
             rtn_str = '{} {}'.format(self.suffix, self.file_numbers)
 
@@ -164,7 +165,7 @@ class FileAttr():
         """检查文件编码,并将统计数据写入当前实例"""
         with open(file, 'rb') as file_handle:
             encoding = chardet.detect(file_handle.read())['encoding']
-            self.encodings[encoding] = self.encodings.get(encoding, 0) + 1
+            self.encodings_counter.update(encoding)
 
     def __inspect_newline(self, file):
         """检查文件换行符,并将统计数据写入当前实例"""
@@ -172,7 +173,7 @@ class FileAttr():
             line = file_handle.readline()
             newline_character = self.get_new_line(line)
             if newline_character:
-                self.newlines[newline_character] = self.newlines.get(newline_character, 0) + 1
+                self.newlines_counter.update(newline_character)
 
     def __inspect_size(self, file):
         """检查文件大小,并将统计数据写入当前实例"""
@@ -186,10 +187,9 @@ class FileAttr():
         """检查文件是空格还是跳格,并将统计数据写入当前实例"""
         with open(file, 'rb') as file_handle:
             if file_handle.read(1000).find(b'\t') != -1:
-                self.tab_or_space['\t'] = self.tab_or_space.get('\t', 0) + 1
+                self.tab_or_space_counter.update('\t')
             else:
-                self.tab_or_space['space'] = self.tab_or_space.get(
-                    'space', 0) + 1
+                self.tab_or_space_counter.update('space')
 
 
 def get_filter_suffixs():
