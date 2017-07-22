@@ -88,7 +88,7 @@ class FileAttr():
         include_extensions = ['.py', '.html', '.js', '.css', '.conf',
                               '.txt', '.sh', '.pas', '.sql', '.sqc',
                               '.h', '.cpp', '.ini', '.H', '.txt',
-                              '.sql', '.CPP', '.rb']
+                              '.sql', '.CPP', '.rb', '.c']
 
         if extension in include_extensions:
             return True
