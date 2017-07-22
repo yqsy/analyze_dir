@@ -122,6 +122,24 @@ class FileAttr():
                 return character.decode()
             return None
 
+    @staticmethod
+    def is_encoding_equal(from_encoding, bytes_encoding):
+        """
+        常见场景:
+        1.utf-8,utf-bom -> gb2312
+        2.gb2312 -> utf-8
+        对于第一种情况判断时from_encoding为utf-8,utf-bom也算上
+        """
+        if from_encoding.lower() == 'utf-8':
+            if bytes_encoding.lower() == 'utf-8' or \
+                            bytes_encoding.lower() == 'utf-8-sig':
+                return True
+
+        if from_encoding.lower() == bytes_encoding.lower():
+            return True
+
+        return False
+
     def inspect_file(self):
         """检查所有文件属性
         1.encoding 2.newline 3.size 4.line 5.tab or space
@@ -144,21 +162,23 @@ class FileAttr():
             with open(file, 'rb') as file_handle:
                 read_bytes = file_handle.read()
                 bytes_encoding = chardet.detect(read_bytes)['encoding']
+
                 if not bytes_encoding:
                     continue
-                if from_encoding.lower() == bytes_encoding.lower():
+
+                if self.is_encoding_equal(from_encoding, bytes_encoding):
                     try:
-                        write_bytes = (read_bytes.decode(from_encoding)).encode(to_encoding)
+                        write_bytes = (read_bytes.decode(bytes_encoding)).encode(to_encoding)
                     except UnicodeDecodeError as err:
                         print(colored('{file} convert from {from_encoding} to {to_encoding},err={err}'.format(
-                            file=file, from_encoding=from_encoding, to_encoding=to_encoding, err=err), 'red'))
+                            file=file, from_encoding=bytes_encoding, to_encoding=to_encoding, err=err), 'red'))
                         continue
 
             if write_bytes:
                 with open(file, 'wb') as file_handle:
                     file_handle.write(write_bytes)
                     print(colored('{file} convert from {from_encoding} to {to_encoding}'.format(
-                        file=file, from_encoding=from_encoding, to_encoding=to_encoding), 'green'))
+                        file=file, from_encoding=bytes_encoding, to_encoding=to_encoding), 'green'))
 
     def __inspect_encoding(self, file):
         """检查文件编码,并将统计数据写入当前实例"""
