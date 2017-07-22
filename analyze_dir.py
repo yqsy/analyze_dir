@@ -169,7 +169,7 @@ class FileAttr():
                 if self.is_encoding_equal(from_encoding, bytes_encoding):
                     try:
                         write_bytes = (read_bytes.decode(bytes_encoding)).encode(to_encoding)
-                    except UnicodeDecodeError as err:
+                    except (UnicodeDecodeError, UnicodeEncodeError) as err:
                         print(colored('{file} convert from {from_encoding} to {to_encoding},err={err}'.format(
                             file=file, from_encoding=bytes_encoding, to_encoding=to_encoding, err=err), 'red'))
                         continue
