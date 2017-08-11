@@ -11,7 +11,7 @@ SUBPARSER = PARSER.add_subparsers(help='commands', dest='command')
 
 ANALYZE_PARSER = SUBPARSER.add_parser('analyze', help='analyze directory')
 
-ANALYZE_PARSER.add_argument('directory', metavar='directory',
+ANALYZE_PARSER.add_argument('directory',
                             nargs=1, help='which directory to be traversed')
 
 ANALYZE_PARSER.add_argument('-s', '--suffix', action='store', dest='suffix',
@@ -23,7 +23,7 @@ ANALYZE_PARSER.add_argument('-i', '--ignore_directory', action='store', dest='ig
 
 CONVERT_PARSER = SUBPARSER.add_parser('convert', help='convert file in directory')
 
-CONVERT_PARSER.add_argument('directory', metavar='directory',
+CONVERT_PARSER.add_argument('directory',
                             nargs=1, help='which directory to be traversed')
 
 CONVERT_PARSER.add_argument('-s', '--suffix', action='store', dest='suffix',
