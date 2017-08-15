@@ -120,7 +120,8 @@ class FileAttr():
         for character in new_line_characters:
             if line.endswith(character):
                 return character.decode()
-            return None
+
+        return None
 
     @staticmethod
     def is_encoding_equal(from_encoding, bytes_encoding):
